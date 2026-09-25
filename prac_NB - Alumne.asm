@@ -263,9 +263,11 @@ calcIndex proc
 	mov  ebp, esp
 	;Inici Codi de la pràctica
 
-
-
-
+	mov eax, [row]
+	imul eax, 4
+	add eax, [col]
+	imul eax, 2
+	mov [pos], eax
 
  	;Fi Codi de la pràctica
 	mov esp, ebp
