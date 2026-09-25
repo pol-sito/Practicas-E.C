@@ -1,1 +1,1 @@
-# Pr-cticas-E.C
+# Practicas-E.C
