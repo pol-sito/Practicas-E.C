@@ -310,8 +310,22 @@ showNumber proc
 	mov  ebp, esp
 	;Inici codi d'alumne de la rutina
 	
+	mov eax, [number]
+	cmp eax, 9999
+
+	;Si no es 9999 tiene que ponerle el valor con mov
+	;Si lo es entonces salta a la etiqueta
+	jle num_ok
 	
+	mov eax, 9999
+	mov [number], eax
 	
+	cmp eax, 0
+	je es_cero
+
+
+num_ok:
+	call showCursor
 	
 
 	;Fi codi d'alumne de la rutina
