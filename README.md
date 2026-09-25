@@ -1,4 +1,4 @@
-# 2048 en Ensamblador x86
+# 🎮 2048 en Ensamblador x86
 
 Práctica de la asignatura **Estructura de Computadores** para implementar el funcionamiento interno del juego 2048 combinando **C++** y **Ensamblador x86 (MASM de 32 bits)**.
 
