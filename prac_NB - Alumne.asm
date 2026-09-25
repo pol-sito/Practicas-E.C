@@ -222,8 +222,17 @@ showCursor proc
 	mov  ebp, esp
 	;Inici codi d'alumne de la rutina
 
+	mov eax, [row]
+	imul eax, 2
+	add eax, 10
+	mov [rowScreen], eax
 
+	mov eax, [col]
+	imul eax, 9
+	add eax, 13
+	mov [colScreen], eax
 
+	call gotoxy
 
 	;Fi codi d'alumne de la rutina
 	mov esp, ebp
