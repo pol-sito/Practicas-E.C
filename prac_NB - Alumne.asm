@@ -314,19 +314,59 @@ showNumber proc
 	cmp eax, 9999
 
 	;Si no es 9999 tiene que ponerle el valor con mov
-	;Si lo es entonces salta a la etiqueta
+	;Si lo es entonces salta a num ok
 	jle num_ok
 	
 	mov eax, 9999
 	mov [number], eax
-	
-	cmp eax, 0
-	je es_cero
-
 
 num_ok:
 	call showCursor
+
+	mov eax, [number]
+	cmp eax, 0
+	jne no_es_cero ;si el num != 0 salta
+	mov al, ' '
+	mov [carac], al
+	call printch
+	call printch
+	call printch
+	call printch
+	jmp fin_showNumber
+
+no_es_cero:
+	mov ecx, 0 ;si vale 0 ponemos espacios, si vale 1 ponemos ceros
 	
+	;/1000
+	mov eax, [number]
+	mov ebx, 1000
+	mov edx, 0
+	div ebx ;eax resultado, edx resto (1024, eax = 1, edx = 024)
+	mov [number], edx ;guardar resto
+	call imprime_digito
+
+	;/100
+	mov eax, [number]
+	mov ebx, 100
+	mov edx, 0
+	div ebx
+	mov [number], edx
+	call imprime_digito
+	
+	;/10
+	mov eax, [number]
+	mov ebx, 10
+	mov edx, 0
+	div ebx
+	mov [number], edx
+	call imprime_digito
+
+	;unitats
+	mov eax, [number]
+	add al, '0'
+	mov [carac], al
+	call printch
+	jmp fin_showNumber
 
 	;Fi codi d'alumne de la rutina
 	mov esp, ebp
