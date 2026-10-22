@@ -505,14 +505,64 @@ shiftNumbers endp
 addPairs proc
 	push ebp
 	mov  ebp, esp
+	Push_all
 	;Inici codi d'alumne de la rutina
 
+	; començem desde la primera fila (abaix del tot)
+	mov ecx, 3               
 
+bucle_filas:
+	cmp ecx, 0 ; ecx = fila, si es < 0 significa que hemos visto todas
+	jl fin_addPairs          
 
+	; en la fila actual empezamos desde la derecha
+	mov edx, 3               
 
+bucle_columnas:
+	cmp edx, 0 ; edx = columna, si es < 0 debemos ir a la siguiente fila
+	jle siguiente_fila
 
+	; calcular casilla derecha memoria: (fila * 4 + columna) * 2
+	mov eax, ecx
+	imul eax, 4
+	add eax, edx
+	imul eax, 2
+	mov esi, eax	; esi = casilla derecha
 
- 	;Fi codi d'alumne de la rutina
+	; casilla izquierda = casilla derecha - 2
+	mov edi, esi
+	sub edi, 2	; edi = casilla izquierda
+
+	mov ax, m[esi]           ; leemos el número de la derecha
+	mov bx, m[edi]           ; leemos el número de la izquierda
+
+	cmp ax, 0
+	je avanza_col            ; Si la casilla de la derecha es un 0 no se suma nada
+
+	cmp ax, bx
+	jne avanza_col           ; Si los dos números no son iguales no se suma nada
+
+	add ax, ax               ; por descarte son iguales, entonces * 2
+
+	mov m[esi], ax  ; guardamos la suma en la casilla de la derecha
+	mov m[edi], 0   ;un 0 en la casilla izquierda
+
+	mov [state], '2'   ; avisamos al juego de que el tablero ha cambiado
+
+	sub edx, 2	; saltamos 2 columnas a la izquierda para no volver a sumar el mismo numero     
+	jmp bucle_columnas
+
+avanza_col:
+	dec edx ; siguiente columna hacia la izquierda
+	jmp bucle_columnas
+
+siguiente_fila:
+	dec ecx ; siguiente fila hacia arriba
+	jmp bucle_filas
+
+fin_addPairs:
+	Pop_all
+	;Fi codi d'alumne de la rutina
 	mov esp, ebp
 	pop ebp
 	ret
