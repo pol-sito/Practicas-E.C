@@ -786,14 +786,52 @@ insertTile proc
 	push ebp
 	mov  ebp, esp
 	;Inici codi d'alumne de la rutina
+    Push_all
 
+    mov ebx, [rowInsert]
+    mov edx, 0
+    
+    ;bucle de les 4 files a la columna rowInsert
+bucle_insert:
+	cmp edx, 4 ;si hem revisat les 4 files saltem
+	jge tauler_ple
 
+    mov esi, ebx
+    imul esi, 8 ;calculem la casella corresponent (offset)
 
+    mov ax, m[esi] ;obtenim el valor de la casella i el guardem
+    cmp ax, 0 ;si es 0 aquella es la posició que anirà el 2
+    je posicio_lliure
+    
+    ;si no salta hem de comprovar la fila seguent
+    inc ebx ;passem a la fila seguent
+    cmp ebx, 4 ;si arribem a la ultima fila tornem a la 0
+    jl seguent_intent
+    mov ebx, 0 ;si es 4 tornem a la fila 0
 
+seguent_intent:
+    inc edx ;sumem 1 al comptador de les files
+    jmp bucle_insert ;comprovem la seguent fila
 
+posicio_lliure:
+    mov ax, 2 ;carreguem el valor 2 a inserir
+    mov m[esi], ax ;inserim el 2 a la casella lliure
 
+    ;actualitzem rowInsert a la següent fila de forma circular
+    inc ebx ;passem a la fila seguent per a la proxima jugada
+    cmp ebx, 4 ;comprovem si hem passat de la fila 3
+    jl guardar_fila
+    mov ebx, 0 ;si es 4 tornem a la fila 0
 
+guardar_fila:
+    mov [rowInsert], ebx ;guardem la nova fila a rowInsert
+    jmp fi_insertTile ;sortim de la subrutina
 
+tauler_ple:
+    mov [state], '4' ;si les 4 files estan plenes posem state a '4'
+
+fi_insertTile:
+    Pop_all
  	;Fi codi d'alumne de la rutina
 	mov esp, ebp
 	pop ebp
