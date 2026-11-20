@@ -308,13 +308,14 @@ showNumber proc
     mov  ebp, esp
 ;Inici codi d'alumne de la rutina
 
-    push ebx
-    push esi
-    push edi
+push ebx
+push esi
+push edi
+
 call showCursor;posicionem el cursor on toca mostrar el numero
-;max number = 9999
+
 mov esi, [number]
-cmp esi, 9999
+cmp esi, 9999 ;si el nombre es superior al maxim (9999)
 jbe numeroValido
 mov esi, 9999 ; ajustem valor a 9999
 mov [number], esi
@@ -337,7 +338,7 @@ jmp fiShowNumber;un cop hem acabat de mostrar el numero, sortim
 empezarConversion:
 ;Empezamos por los miles
 mov ebx, 1000; divisor inicial = 1000
-mov edi, 0; comptador de dígits impresos
+mov edi, 0; comprovar si es 0 o espai
 
 bucleDigitos:
 ; Dividir el numero por el divisor (1000, 100, 10, 1)
@@ -360,7 +361,7 @@ mov esi, edx
 
 imprimirDigito:
     ; Convertir el digito a ASCII
-    mov edi, 1
+    mov edi, 1 ;a partir de ahora cada 0 no será un espacio
     add al, 48 ;pasar a ASCII sumando 48 = "0"
     mov [carac], al
 
@@ -368,7 +369,7 @@ imprimirCaracter:
     ; Imprimir el caracter
     call printch
 
-    ; Divides el divisor entre 10 para pasar al siguiente dígito.
+    ; dividir el divisor entre 10 para pasar al siguiente digito.
     mov eax, ebx;carreguem el divisor a eax
     mov edx, 0
     mov ecx, 10
@@ -720,6 +721,181 @@ ret
 
 addPairs endp
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Rutina: rotateMatrix
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;     
+; Rotar a la dreta la matriu (m), sobre la matriu (mAux). 
+; La primera fila passa a ser la quarta columna, la segona fila passa 
+; a ser la tercera columna, la tercera fila passa a ser la segona 
+; columna i la quarta fila passa a ser la primer columna.
+; A l'enunciat s'explica en més detall com fer la rotació.
+; NOTA: NO és el mateix que fer la matriu transposada.
+; La matriu (m) no s'ha de modificar, els canvis s'han de fer a la matriu (mAux).
+; Per a accedir a una posició concreta de la matriu des d'assemblador 
+; cal tindre en compte que l'índex és:
+; index_origen=(fila*DimMatrix+columna)*2)
+; Es multipliquem per 2 perquè les dades son de tipus short 2 bytes.
+; L'element [i][j] de la matriu original va a la posició rotada amb índex
+; índex_rotat = (columna*DimMatrix+DimMatrix-1-fila)*2
+; Un cop s'ha fet la rotació, copiar la matriu (mAux) a la matriu (m)
+; cridant la subrutina copyMatrix.
+; No s'ha de mostrar la matriu.
+; 
+; Variables utilitzades:   
+; m:			Matriu de 4x4 shorts que conté l'estat del tauler de joc
+; mAux:			Matriu de 4x4 shorts auxiliar
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+rotateMatrix proc
+	push ebp
+	mov  ebp, esp
+	;Inici codi d'alumne de la rutina
+
+
+
+
+
+
+
+ 	;Fi codi d'alumne de la rutina
+	mov esp, ebp
+	pop ebp
+	ret
+
+rotateMatrix endp
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Rutina: insertTile
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; En aquesta subrutina s'insereix un nou element a la columna de més a l'esquerra
+; de la matriu. L'element a inserir és sempre un valor 2.
+; La fila en la que s'insereix l'element es va variant de forma
+; rotativa, començant per la fila 0 al començament del programa.
+; La següent vegada a la fila 1, i així successivament.
+; Si la posició corresponent està plena es passa a la fila següent.
+; Si no es pot inserir perquè estan les 4 posicions plenes
+; es posa la variable (state) a 4.
+;
+; Variables globals utilitzades:   
+; m:			Matriu de 4x4 shorts que conté l'estat del tauler de joc
+; rowInsert:	Fila on farem la següent inserció d'un 2 per proseguir amb la partida
+; state:		Indica l'estat del joc (1-5) ('4': NO S'ha pogut inserir --> matriu plena)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+insertTile proc
+	push ebp
+	mov  ebp, esp
+	;Inici codi d'alumne de la rutina
+
+
+
+
+
+
+
+
+ 	;Fi codi d'alumne de la rutina
+	mov esp, ebp
+	pop ebp
+	ret
+
+insertTile endp
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Rutina: onePlay
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; En primer lloc cal mostrar la matriu al tauler cridant a showMatrix.
+; Llegir una tecla cridant la subrutina getch, que es guarda a la variable (carac).
+; Segons la tecla llegida cridarem a les subrutines corresponents.
+;    ['i' (amunt),'j'(esquerra),'k' (avall) o 'l'(dreta)] 
+; Desplaçar els números i fer les parelles segons la direcció triada.
+; Segons la tecla premuda, rotar la matriu cridant (rotateMatrix), per
+; a poder fer els desplaçaments dels números cap a la dreta 
+; (shiftNumbers), fer les parelles cap a la dreta (addPairs) i 
+; tornar a desplaçar els nombres cap a la dreta (shiftNumbers) 
+; amb les parelles fetes, després seguir rotant cridant (rotateMatrix) 
+; fins deixar la matriu en la posició inicial. 
+; Per a la tecla 'l' (dreta) no cal fer rotacions, per a la resta 
+; s'han de fer 4 rotacions.
+;    '<q>Quit' posar (state = '0') per a sortir del joc.
+; Si no és cap d'aquestes tecles no fer res.
+; Els canvis produïts per aquestes subrutines no s'han de mostrar a la 
+; pantalla, per tant, caldrà actualitzar després el tauler cridant la 
+; subrutina showMatrix.
+;
+; Variables globals utilitzades:
+; tecla:		Variable on s'emmagatzema el caràcter llegit del teclat
+; state:		Indica l'estat del joc (1-5). ('0':sortir (Quit premut), '1':jugar)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+onePlay proc
+	push ebp
+	mov  ebp, esp
+	;Inici codi d'alumne de la rutina
+
+
+
+
+
+ 	;Fi codi d'alumne de la rutina
+	mov esp, ebp
+	pop ebp
+	ret
+
+onePlay endp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Rutina: PlayGame
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Joc del 2048
+; Subrutina principal del joc
+; Permet jugar al joc del 2048 cridant totes les funcionalitats.
+;
+; Pseudo codi:
+; Inicialitzar estat del joc, (state='1')
+; 
+; Mentre (state) <> '0'
+;	cridar onePlay
+;	cridar printMessage_C
+; Fi mentre.
+; cridar printMessage_C
+;
+; Mostra un missatge a sota del tauler segons el valor de la variable 
+; (state). (cridar la funció printMessage_C).
+; Sortir: 
+; S'acabat el joc.
+;
+; Variables utilitzades:
+; state: Indica l'estat del joc (0-5).
+;              '0': Sortir, hem premut la tecla ‘q’).
+;              '1': Continuem jugant.
+;              '2': Continuem jugant però s'han fet canvis a la matriu.
+;              '3': Has guanyat, has fet 2048
+;              '4': Taulell ple
+;              '5': Tauler bloquejat, has perdut
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+playGame proc
+	push ebp
+	mov  ebp, esp
+	;Inici codi d'alumne de la rutina
+
+
+
+
+
+
+
+ 	;Fi codi d'alumne de la rutina
+	mov esp, ebp
+	pop ebp
+	ret
+
+playGame endp
 
 
 

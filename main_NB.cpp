@@ -123,10 +123,10 @@ int printMenu_C() {
 	printf("|         4. CopyMatrix            |\n");
 	printf("|         5. ShiftNumbers          |\n");
 	printf("|         6. AddPairs              |\n");
+	printf("|         7. RotateMatrix          |\n");
+	printf("|         8. OnePlay               |\n");
+	printf("|         9. PlayGame              |\n");
 	printf("|         0. Exit                  |\n");
-	printf("|                                  |\n");
-	printf("|                                  |\n");
-	printf("|                                  |\n");
 	printf("|__________________________________|\n");
 	printf("|                                  |\n");
 	printf("|            OPTION:               |\n");
@@ -312,6 +312,42 @@ int main(void) {
 			getch_C();
 			break;
 			//Opció del Menú --> 7. RotateMatrix   ,Rotar matriu en sentit del rellotge
+		case '7':
+			clearscreen_C();  		//Esborra la pantalla
+			printBoard_C();   		//Mostrar el tauler.
+
+			showMatrix();			//
+			getch_C();
+			rotateMatrix();			//
+			showMatrix();			//
+
+			gotoxy_C(24, 19);		//Situar el cursor a sota del tauler
+			printf("Press any key ");
+			getch_C();
+			break;
+
+			//Opció del Menú --> 8. OnePlay   
+		case '8':
+			clearscreen_C();  		//Esborra la pantalla
+			printBoard_C();   		//Mostrar el tauler.
+
+			onePlay();
+
+			gotoxy_C(24, 19);		//Situar el cursor a sota del tauler
+			printf("Press any key ");
+			getch_C();
+			break;
+
+			//Opció del Menú --> 9. PlayGame   
+		case '9':
+			clearscreen_C();  		//Esborra la pantalla
+			printBoard_C();   		//Mostrar el tauler.
+
+			playGame();
+
+			gotoxy_C(24, 19);		//Situar el cursor a sota del tauler
+			printf("Press any key ");
+			getch_C();
 
 		}
 	}
