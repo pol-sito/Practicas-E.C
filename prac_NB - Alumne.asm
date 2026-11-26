@@ -787,48 +787,47 @@ insertTile proc
 	mov  ebp, esp
 	;Inici codi d'alumne de la rutina
     Push_all
+    mov ebx, [rowInsert] ;Quina fila a insertar
+    mov edx, 0 ;Comptador d'intents
 
-    mov ebx, [rowInsert]
-    mov edx, 0
-    
-    ;bucle de les 4 files a la columna rowInsert
-bucle_insert:
-	cmp edx, 4 ;si hem revisat les 4 files saltem
-	jge tauler_ple
+bucle_intents: ;Fins a 4 (0 -> 4 | 1, 2, 3, 0...)
+    cmp edx, 4
+    jge tauler_ple ;Si les quatre posicions estan plenes
 
-    mov esi, ebx
-    imul esi, 8 ;calculem la casella corresponent (offset)
+    mov esi, ebx ;copiem l'index de la fila a esi
+    imul esi, 8 ;el convertim a l'offset
+    mov ax, m[esi] ;utilitzem ax (16 bits) ja que m es short
 
-    mov ax, m[esi] ;obtenim el valor de la casella i el guardem
-    cmp ax, 0 ;si es 0 aquella es la posició que anirà el 2
+    cmp ax, 0 ;comparem la posició actual matriu, si està lliure
     je posicio_lliure
-    
-    ;si no salta hem de comprovar la fila seguent
-    inc ebx ;passem a la fila seguent
-    cmp ebx, 4 ;si arribem a la ultima fila tornem a la 0
+
+    inc ebx ;seguent fila (0 -> 1 ... 3 -> 0)
+    cmp ebx, 4
     jl seguent_intent
-    mov ebx, 0 ;si es 4 tornem a la fila 0
+
+    mov ebx, 0 ;si era 3, per fer-ho circular ho reiniciem
 
 seguent_intent:
-    inc edx ;sumem 1 al comptador de les files
-    jmp bucle_insert ;comprovem la seguent fila
+    inc edx ;sumem 1 als intents actuals (max 4 = columnes)
+    jmp bucle_intents
 
 posicio_lliure:
-    mov ax, 2 ;carreguem el valor 2 a inserir
-    mov m[esi], ax ;inserim el 2 a la casella lliure
+    mov ax, 2
+    mov m[esi], ax ;carreguem el valor 2 a la matriu a la pos lliure
 
-    ;actualitzem rowInsert a la següent fila de forma circular
-    inc ebx ;passem a la fila seguent per a la proxima jugada
-    cmp ebx, 4 ;comprovem si hem passat de la fila 3
-    jl guardar_fila
-    mov ebx, 0 ;si es 4 tornem a la fila 0
+    ;hem d'incrementar rowInsert per a la proxima inserció
 
-guardar_fila:
-    mov [rowInsert], ebx ;guardem la nova fila a rowInsert
-    jmp fi_insertTile ;sortim de la subrutina
+    inc ebx ;passem a la seguent fila
+    cmp ebx, 4 ;si passem de 3 el posem a 0
+    jl actualitzar_row
+    mov ebx, 0 ;el posem a 0
+
+actualitzar_row:
+    mov [rowInsert], ebx ;guardem la seguent fila a rowInsert
+    jmp fi_insertTile
 
 tauler_ple:
-    mov [state], '4' ;si les 4 files estan plenes posem state a '4'
+    mov [state], '4' ;indiquem que tot està ple
 
 fi_insertTile:
     Pop_all
